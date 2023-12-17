@@ -1,6 +1,7 @@
 package com.vitaliy.springCourse.controllers;
 
 import com.vitaliy.springCourse.dao.BookDAO;
+import com.vitaliy.springCourse.dao.PersonDAO;
 import com.vitaliy.springCourse.models.Book;
 import com.vitaliy.springCourse.models.Person;
 import org.springframework.stereotype.Controller;
@@ -9,15 +10,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/books")
 public class BooksController {
 
     private final BookDAO bookDAO;
+    private final PersonDAO personDAO;
 
-    public BooksController(BookDAO bookDAO) {
+    public BooksController(BookDAO bookDAO, PersonDAO personDAO) {
         this.bookDAO = bookDAO;
+        this.personDAO = personDAO;
     }
 
     @GetMapping
@@ -31,7 +35,6 @@ public class BooksController {
         return "/books/new";
     }
 
-
     @GetMapping("/{id}/edit")
     public String edit(Model model, @PathVariable("id") int bookId) {
         model.addAttribute("book", bookDAO.show(bookId));
@@ -39,8 +42,21 @@ public class BooksController {
     }
 
     @GetMapping("/{id}")
-    public String show(Model model, @PathVariable("id") int bookId) {
+    public String show(
+            Model model,
+            @PathVariable("id") int bookId,
+            @ModelAttribute("person") Person person
+            ) {
         model.addAttribute("book", bookDAO.show(bookId));
+
+        Optional<Person> bookOwner = bookDAO.getBookOwner(bookId);
+
+        if(bookOwner.isPresent()) {
+            model.addAttribute("owner", bookOwner.get());
+        } else {
+            model.addAttribute("people", personDAO.index());
+        }
+
         return "/books/show";
     }
 
@@ -55,7 +71,6 @@ public class BooksController {
             bookDAO.save(book);
             return "redirect:/books";
         }
-
     }
 
     @DeleteMapping("/{id}")
@@ -76,5 +91,22 @@ public class BooksController {
             bookDAO.update(id, book);
             return "redirect:/books";
         }
+    }
+
+    @PatchMapping("/{id}/assign")
+    public String assignBook(
+            @PathVariable("id") int id,
+            @ModelAttribute("person") Person selectedPerson
+    ) {
+        bookDAO.assignBook(id, selectedPerson);
+        return "redirect:/books/" + id;
+    }
+
+    @PatchMapping("/{id}/release")
+    public String releaseBook(
+            @PathVariable("id") int id
+    ) {
+        bookDAO.releaseBook(id);
+        return "redirect:/books/" + id;
     }
 }

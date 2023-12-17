@@ -3,6 +3,7 @@ package com.vitaliy.springCourse.controllers;
 
 import com.vitaliy.springCourse.dao.PersonDAO;
 import com.vitaliy.springCourse.models.Person;
+import com.vitaliy.springCourse.utils.PersonValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,16 +17,18 @@ import javax.validation.Valid;
 public class PeopleController {
 
     private final PersonDAO personDAO;
+    private final PersonValidator personValidator;
 
     @Autowired
-    public PeopleController(PersonDAO personDAO) {
+    public PeopleController(PersonDAO personDAO, PersonValidator personValidator) {
         this.personDAO = personDAO;
+        this.personValidator = personValidator;
     }
+
 
     @GetMapping
     public String index(Model model) {
         model.addAttribute("people", personDAO.index());
-        System.out.println(personDAO.index().toString());
         return "people/index";
     }
 
@@ -39,6 +42,7 @@ public class PeopleController {
             @ModelAttribute("person") @Valid Person person,
             BindingResult bindingResult
     ) {
+        personValidator.validate(person, bindingResult);
         if (bindingResult.hasErrors()) {
             return "people/new";
         } else {
@@ -56,6 +60,7 @@ public class PeopleController {
     @GetMapping("/{id}")
     public String show(@PathVariable("id") int id, Model model) {
         model.addAttribute("person", personDAO.show(id));
+        model.addAttribute("books", personDAO.getBooksByPersonId(id));
         return "people/show";
     }
 
