@@ -18,9 +18,13 @@
         <hr/>
         <b>Books:</b>
         <br/>
-        <table th:each="book: ${books}">
-            <tr th:text="${book.getBookTitle() + ', ' + book.getAuthor() + ', ' + book.getYearOfPublication()}">book</tr>
+        <table>
+            <tr th:each="book: ${books}">
+                <td th:text="${'Id: ' + book.getId() + '. ' + book.getBookTitle() + ', ' + book.getAuthor() + ', ' + book.getYearOfPublication()}"
+                    th:style="${book.returnedOnTime ? '' : 'color: red;'}">book</td>
+            </tr>
         </table>
+
     </div>
 
 

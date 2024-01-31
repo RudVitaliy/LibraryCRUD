@@ -1,7 +1,8 @@
 package com.vitaliy.springCourse.utils;
 
-import com.vitaliy.springCourse.dao.PersonDAO;
 import com.vitaliy.springCourse.models.Person;
+import com.vitaliy.springCourse.services.PeopleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -9,10 +10,12 @@ import org.springframework.validation.Validator;
 @Component
 public class PersonValidator implements Validator {
 
-    private final PersonDAO personDAO;
+    private final PeopleService peopleService;
 
-    public PersonValidator(PersonDAO personDAO) {
-        this.personDAO = personDAO;
+
+    @Autowired
+    public PersonValidator(PeopleService peopleService) {
+        this.peopleService = peopleService;
     }
 
     @Override
@@ -23,7 +26,7 @@ public class PersonValidator implements Validator {
     @Override
     public void validate(Object o, Errors errors) {
         Person person = (Person) o;
-        if(personDAO.getPersonByFullName(person.getFullName()).isPresent()) {
+        if(peopleService.getPersonByFullName(person.getFullName()).isPresent()) {
             errors.rejectValue("fullName", "", "Person with such name already exists");
         }
     }

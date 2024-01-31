@@ -2,19 +2,52 @@
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Index</title>
+    <title>People Catalog</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+        }
+
+        .add-person-link {
+            display: inline-block;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .person-container {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+
+        .person-container:hover {
+            background-color: #f0f0f0;
+        }
+
+        .person-container a span {
+            color: black;
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-<div th:each="person : ${people}">
-    <a th:href="@{/people/{id}(id=${person.getId()})}"
-       th:text="${person.getFullName() + ', ' + person.getYearOfBirth()}">user</a>
+<a href="/people/new" class="add-person-link">Create new person</a>
+
+<div th:each="person : ${people}" class="person-container">
+    <a th:href="@{/people/{id}(id=${person.getId()})}">
+        <span th:text="${person.getFullName()}"></span>,
+        <span th:text="${person.getYearOfBirth()}"></span>
+    </a>
 </div>
-
-<br/>
-<hr/>
-
-<a href="/people/new">Create new person</a>
 
 </body>
 </html>

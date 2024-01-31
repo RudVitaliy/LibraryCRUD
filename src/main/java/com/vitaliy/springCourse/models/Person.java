@@ -1,20 +1,35 @@
 package com.vitaliy.springCourse.models;
 
+import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.List;
 
+
+@Entity
+@Table(name = "person")
 public class Person {
 
-
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "full_name")
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 100, message = "Name should be from 2 to 100 characters")
     private String fullName;
 
+
+    @Column(name = "year_of_birth")
     @Min(value = 1900, message = "Year of birth should be greater than 1900")
     private int yearOfBirth;
+
+
+    @OneToMany(mappedBy = "owner")
+
+    private List<Book> books;
 
     public Person() {
 
